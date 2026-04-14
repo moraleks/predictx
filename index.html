@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>PredictX — Prediction Markets</title>
+  <title>VoteGage — Prediction Markets</title>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -40,7 +40,6 @@
       opacity: 0.4;
     }
 
-    /* ─── NAV ─── */
     nav {
       display: flex;
       align-items: center;
@@ -60,16 +59,15 @@
       font-weight: 800;
       font-size: 1.3rem;
       letter-spacing: -0.5px;
-      color: var(--text);
     }
-    .logo span { color: var(--accent); }
+    .logo .vote { color: #ffffff; }
+    .logo .gage { color: var(--accent); }
 
     .nav-links {
       display: flex;
       gap: 2rem;
       list-style: none;
       font-size: 0.8rem;
-      color: var(--muted);
     }
     .nav-links a {
       color: var(--muted);
@@ -85,7 +83,6 @@
       gap: 1rem;
     }
 
-    /* ─── BUTTONS ─── */
     .btn {
       font-family: 'DM Mono', monospace;
       font-size: 0.78rem;
@@ -109,99 +106,122 @@
     }
     .btn-primary:hover { background: #00ffb3; }
 
-    /* ─── MODAL OVERLAY ─── */
+    .user-menu {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    .user-avatar {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent3));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #000;
+      cursor: pointer;
+    }
+    .user-name { font-size: 0.78rem; color: var(--text); }
+    .btn-logout {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      padding: 0.4rem 0.9rem;
+      border-radius: 6px;
+      cursor: pointer;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      transition: all 0.2s;
+    }
+    .btn-logout:hover { border-color: var(--accent2); color: var(--accent2); }
+
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.75);
+      background: rgba(0,0,0,0.75);
       backdrop-filter: blur(6px);
-      z-index: 2000;
+      z-index: 500;
       display: flex;
       align-items: center;
       justify-content: center;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.25s ease;
+      transition: opacity 0.25s;
     }
-    .modal-overlay.active {
+    .modal-overlay.open {
       opacity: 1;
       pointer-events: all;
     }
 
-    /* ─── MODAL BOX ─── */
     .modal {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 16px;
-      padding: 2.2rem 2.4rem;
+      padding: 2.2rem;
       width: 100%;
       max-width: 400px;
       position: relative;
       transform: translateY(20px) scale(0.97);
       transition: transform 0.25s ease;
-      box-shadow: 0 24px 64px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,229,160,0.06);
+      box-shadow: 0 24px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,229,160,0.08);
     }
-    .modal-overlay.active .modal {
+    .modal-overlay.open .modal {
       transform: translateY(0) scale(1);
     }
 
     .modal-close {
       position: absolute;
-      top: 1rem;
-      right: 1rem;
+      top: 1rem; right: 1rem;
       background: none;
       border: none;
       color: var(--muted);
       font-size: 1.2rem;
       cursor: pointer;
-      line-height: 1;
-      padding: 0.2rem 0.4rem;
-      border-radius: 4px;
-      transition: color 0.2s;
+      width: 28px; height: 28px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 6px;
+      transition: all 0.15s;
     }
-    .modal-close:hover { color: var(--text); }
+    .modal-close:hover { background: var(--surface2); color: var(--text); }
 
     .modal-logo {
       font-family: 'Syne', sans-serif;
       font-weight: 800;
-      font-size: 1.1rem;
-      color: var(--text);
+      font-size: 1.2rem;
       margin-bottom: 0.3rem;
     }
-    .modal-logo span { color: var(--accent); }
+    .modal-logo .vote { color: #ffffff; }
+    .modal-logo .gage { color: var(--accent); }
 
     .modal-title {
       font-family: 'Syne', sans-serif;
-      font-size: 1.5rem;
+      font-size: 1.4rem;
       font-weight: 700;
-      color: var(--text);
       margin-bottom: 0.4rem;
+      margin-top: 1.2rem;
     }
     .modal-sub {
-      font-size: 0.75rem;
+      font-size: 0.78rem;
       color: var(--muted);
       margin-bottom: 1.8rem;
       line-height: 1.5;
     }
 
-    /* ─── FORM ─── */
-    .form-group {
-      margin-bottom: 1rem;
-    }
+    .form-group { margin-bottom: 1rem; }
     .form-label {
       display: block;
       font-size: 0.7rem;
       color: var(--muted);
-      margin-bottom: 0.4rem;
-      letter-spacing: 0.08em;
       text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.4rem;
     }
     .form-input {
       width: 100%;
       background: var(--surface2);
       border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 0.65rem 0.9rem;
+      padding: 0.7rem 1rem;
       color: var(--text);
       font-family: 'DM Mono', monospace;
       font-size: 0.82rem;
@@ -212,56 +232,41 @@
       border-color: var(--accent);
       box-shadow: 0 0 0 3px rgba(0,229,160,0.1);
     }
+    .form-input.error {
+      border-color: var(--accent2);
+      box-shadow: 0 0 0 3px rgba(255,77,109,0.1);
+    }
     .form-input::placeholder { color: var(--muted); }
 
     .form-error {
       font-size: 0.68rem;
-      color: var(--no);
-      margin-top: 0.35rem;
+      color: var(--accent2);
+      margin-top: 0.3rem;
       display: none;
     }
     .form-error.show { display: block; }
 
-    .modal-submit {
+    .btn-submit {
       width: 100%;
       background: var(--accent);
       color: #000;
       font-family: 'DM Mono', monospace;
-      font-size: 0.82rem;
-      font-weight: 500;
+      font-size: 0.85rem;
+      font-weight: 600;
       padding: 0.75rem;
       border-radius: 8px;
       border: none;
       cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 0.5rem;
       letter-spacing: 0.05em;
-      margin-top: 1.2rem;
-      transition: background 0.2s, transform 0.1s;
     }
-    .modal-submit:hover { background: #00ffb3; }
-    .modal-submit:active { transform: scale(0.98); }
-    .modal-submit:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    .modal-divider {
-      display: flex;
-      align-items: center;
-      gap: 0.8rem;
-      margin: 1.2rem 0;
-      font-size: 0.68rem;
-      color: var(--muted);
-    }
-    .modal-divider::before, .modal-divider::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--border);
-    }
+    .btn-submit:hover { background: #00ffb3; }
+    .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
 
     .modal-switch {
       text-align: center;
-      font-size: 0.72rem;
+      font-size: 0.75rem;
       color: var(--muted);
       margin-top: 1.2rem;
     }
@@ -272,93 +277,23 @@
     }
     .modal-switch a:hover { text-decoration: underline; }
 
-    /* Social login buttons */
-    .social-btn {
-      width: 100%;
-      background: var(--surface2);
-      border: 1px solid var(--border);
+    .alert-box {
+      background: rgba(0,229,160,0.08);
+      border: 1px solid rgba(0,229,160,0.2);
       border-radius: 8px;
-      padding: 0.6rem;
-      color: var(--text);
-      font-family: 'DM Mono', monospace;
-      font-size: 0.78rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.6rem;
-      transition: border-color 0.2s, background 0.2s;
-      margin-bottom: 0.6rem;
-    }
-    .social-btn:hover {
-      border-color: var(--accent);
-      background: rgba(0,229,160,0.04);
-    }
-
-    /* Success state */
-    .modal-success {
-      text-align: center;
-      padding: 1rem 0;
+      padding: 0.7rem 1rem;
+      font-size: 0.75rem;
+      color: var(--accent);
+      margin-bottom: 1rem;
       display: none;
     }
-    .modal-success.show { display: block; }
-    .modal-form-content.hidden { display: none; }
-
-    .success-icon {
-      font-size: 2.5rem;
-      margin-bottom: 0.8rem;
-    }
-    .success-title {
-      font-family: 'Syne', sans-serif;
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: var(--accent);
-      margin-bottom: 0.4rem;
-    }
-    .success-sub {
-      font-size: 0.75rem;
-      color: var(--muted);
-      line-height: 1.5;
+    .alert-box.show { display: block; }
+    .alert-box.error-alert {
+      background: rgba(255,77,109,0.08);
+      border-color: rgba(255,77,109,0.2);
+      color: var(--accent2);
     }
 
-    /* Logged-in nav state */
-    .user-pill {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 100px;
-      padding: 0.3rem 0.9rem 0.3rem 0.5rem;
-      font-size: 0.75rem;
-      color: var(--text);
-      cursor: pointer;
-      transition: border-color 0.2s;
-    }
-    .user-pill:hover { border-color: var(--accent); }
-    .user-avatar {
-      width: 24px; height: 24px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent), var(--accent3));
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.65rem;
-      font-weight: 700;
-      color: #000;
-    }
-    .logout-btn {
-      background: none;
-      border: none;
-      color: var(--muted);
-      font-family: 'DM Mono', monospace;
-      font-size: 0.72rem;
-      cursor: pointer;
-      padding: 0.3rem 0.6rem;
-      border-radius: 4px;
-      transition: color 0.2s;
-    }
-    .logout-btn:hover { color: var(--no); }
-
-    /* ─── HERO ─── */
     .hero {
       padding: 5rem 2rem 3rem;
       text-align: center;
@@ -404,7 +339,6 @@
       line-height: 1.7;
     }
 
-    /* STATS BAR */
     .stats-bar {
       display: flex;
       justify-content: center;
@@ -426,7 +360,6 @@
     }
     .stat-label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 0.2rem; }
 
-    /* FILTERS */
     .filters {
       display: flex;
       align-items: center;
@@ -479,7 +412,6 @@
     .search-box input::placeholder { color: var(--muted); }
     .search-icon { color: var(--muted); font-size: 0.9rem; }
 
-    /* MAIN GRID */
     .main {
       max-width: 1200px;
       margin: 0 auto;
@@ -495,7 +427,6 @@
       gap: 1.2rem;
     }
 
-    /* MARKET CARD */
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -549,7 +480,6 @@
       letter-spacing: 0.1em;
       margin-bottom: 0.3rem;
     }
-
     .card-title {
       font-family: 'Syne', sans-serif;
       font-size: 0.95rem;
@@ -592,7 +522,6 @@
 
     .volume { font-size: 0.7rem; color: var(--muted); }
     .volume strong { color: var(--text); font-size: 0.75rem; }
-
     .trade-btns { display: flex; gap: 0.4rem; }
 
     .trade-btn {
@@ -631,7 +560,6 @@
       text-transform: uppercase;
     }
 
-    /* SIDEBAR */
     .sidebar { display: flex; flex-direction: column; gap: 1.5rem; }
 
     .sidebar-card {
@@ -680,12 +608,7 @@
     }
     .activity-item:last-child { border-bottom: none; }
 
-    .activity-dot {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      margin-top: 0.35rem;
-      flex-shrink: 0;
-    }
+    .activity-dot { width: 6px; height: 6px; border-radius: 50%; margin-top: 0.35rem; flex-shrink: 0; }
     .activity-dot.yes { background: var(--yes); }
     .activity-dot.no { background: var(--no); }
 
@@ -726,127 +649,90 @@
 </head>
 <body>
 
-<!-- ─── NAV ─── -->
+<!-- LOG IN MODAL -->
+<div class="modal-overlay" id="loginModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('loginModal')">✕</button>
+    <div class="modal-logo"><span class="vote">Vote</span><span class="gage">Gage</span></div>
+    <div class="modal-title">Welcome back</div>
+    <div class="modal-sub">Sign in to your account to continue trading.</div>
+
+    <div class="alert-box" id="loginAlert"></div>
+    <div class="alert-box error-alert" id="loginError"></div>
+
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input class="form-input" type="email" id="loginEmail" placeholder="you@example.com" autocomplete="email"/>
+      <div class="form-error" id="loginEmailErr">Enter a valid email address.</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <input class="form-input" type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password"/>
+      <div class="form-error" id="loginPassErr">Password is required.</div>
+    </div>
+
+    <button class="btn-submit" onclick="doLogin()">Log in →</button>
+
+    <div class="modal-switch">
+      Don't have an account? <a onclick="switchModal('loginModal','signupModal')">Sign up</a>
+    </div>
+  </div>
+</div>
+
+<!-- SIGN UP MODAL -->
+<div class="modal-overlay" id="signupModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('signupModal')">✕</button>
+    <div class="modal-logo"><span class="vote">Vote</span><span class="gage">Gage</span></div>
+    <div class="modal-title">Create account</div>
+    <div class="modal-sub">Join 12,400+ traders on VoteGage.</div>
+
+    <div class="alert-box" id="signupAlert"></div>
+    <div class="alert-box error-alert" id="signupError"></div>
+
+    <div class="form-group">
+      <label class="form-label">Username</label>
+      <input class="form-input" type="text" id="signupUsername" placeholder="satoshi" autocomplete="username"/>
+      <div class="form-error" id="signupUserErr">Username must be at least 3 characters.</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input class="form-input" type="email" id="signupEmail" placeholder="you@example.com" autocomplete="email"/>
+      <div class="form-error" id="signupEmailErr">Enter a valid email address.</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <input class="form-input" type="password" id="signupPassword" placeholder="Min. 6 characters" autocomplete="new-password"/>
+      <div class="form-error" id="signupPassErr">Password must be at least 6 characters.</div>
+    </div>
+
+    <button class="btn-submit" onclick="doSignup()">Create account →</button>
+
+    <div class="modal-switch">
+      Already have an account? <a onclick="switchModal('signupModal','loginModal')">Log in</a>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
 <nav>
-  <div class="logo">Predict<span>X</span></div>
+  <div class="logo"><span class="vote">Vote</span><span class="gage">Gage</span></div>
   <ul class="nav-links">
     <li><a href="#">Markets</a></li>
     <li><a href="#">Leaderboard</a></li>
     <li><a href="#">Activity</a></li>
     <li><a href="#">Docs</a></li>
   </ul>
-  <div class="nav-right" id="navRight">
-    <button class="btn btn-outline" onclick="openModal('login')">Log in</button>
-    <button class="btn btn-primary" onclick="openModal('signup')">Sign up</button>
-  </div>
+  <div class="nav-right" id="navRight"></div>
 </nav>
 
-<!-- ─── LOGIN MODAL ─── -->
-<div class="modal-overlay" id="loginOverlay" onclick="handleOverlayClick(event, 'login')">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal('login')">✕</button>
-
-    <div class="modal-form-content" id="loginFormContent">
-      <div class="modal-logo">Predict<span>X</span></div>
-      <div class="modal-title">Welcome back</div>
-      <div class="modal-sub">Sign in to your account to continue trading.</div>
-
-      <button class="social-btn" onclick="socialLogin('Google')">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-        Continue with Google
-      </button>
-      <button class="social-btn" onclick="socialLogin('GitHub')">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
-        Continue with GitHub
-      </button>
-
-      <div class="modal-divider">or</div>
-
-      <div class="form-group">
-        <label class="form-label">Email</label>
-        <input class="form-input" type="email" id="loginEmail" placeholder="you@example.com" />
-        <div class="form-error" id="loginEmailErr">Please enter a valid email.</div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Password</label>
-        <input class="form-input" type="password" id="loginPassword" placeholder="••••••••" />
-        <div class="form-error" id="loginPassErr">Password must be at least 6 characters.</div>
-      </div>
-
-      <button class="modal-submit" onclick="handleLogin()">Log in</button>
-
-      <div class="modal-switch">
-        Don't have an account? <a onclick="switchModal('login','signup')">Sign up</a>
-      </div>
-    </div>
-
-    <div class="modal-success" id="loginSuccess">
-      <div class="success-icon">🎉</div>
-      <div class="success-title">Welcome back!</div>
-      <div class="success-sub">You're now logged in to PredictX.<br/>Happy trading.</div>
-    </div>
-  </div>
-</div>
-
-<!-- ─── SIGNUP MODAL ─── -->
-<div class="modal-overlay" id="signupOverlay" onclick="handleOverlayClick(event, 'signup')">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal('signup')">✕</button>
-
-    <div class="modal-form-content" id="signupFormContent">
-      <div class="modal-logo">Predict<span>X</span></div>
-      <div class="modal-title">Create account</div>
-      <div class="modal-sub">Join 12,400+ traders on PredictX.</div>
-
-      <button class="social-btn" onclick="socialLogin('Google')">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-        Sign up with Google
-      </button>
-      <button class="social-btn" onclick="socialLogin('GitHub')">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
-        Sign up with GitHub
-      </button>
-
-      <div class="modal-divider">or</div>
-
-      <div class="form-group">
-        <label class="form-label">Username</label>
-        <input class="form-input" type="text" id="signupUsername" placeholder="trader_pro" />
-        <div class="form-error" id="signupUsernameErr">Username must be at least 3 characters.</div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Email</label>
-        <input class="form-input" type="email" id="signupEmail" placeholder="you@example.com" />
-        <div class="form-error" id="signupEmailErr">Please enter a valid email.</div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Password</label>
-        <input class="form-input" type="password" id="signupPassword" placeholder="Min. 6 characters" />
-        <div class="form-error" id="signupPassErr">Password must be at least 6 characters.</div>
-      </div>
-
-      <button class="modal-submit" onclick="handleSignup()">Create account</button>
-
-      <div class="modal-switch">
-        Already have an account? <a onclick="switchModal('signup','login')">Log in</a>
-      </div>
-    </div>
-
-    <div class="modal-success" id="signupSuccess">
-      <div class="success-icon">🚀</div>
-      <div class="success-title">Account created!</div>
-      <div class="success-sub">Welcome to PredictX!<br/>Your account is ready. Start trading.</div>
-    </div>
-  </div>
-</div>
-
-<!-- ─── HERO ─── -->
+<!-- HERO -->
 <div class="hero">
   <div class="hero-badge"><span>LIVE</span> — 1,247 active markets</div>
   <h1>Bet on <em>what happens</em><br/>next in the world</h1>
   <p>Trade on real-world events using probability. Buy YES or NO positions and earn when you're right.</p>
   <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
-    <button class="btn btn-primary" style="font-size:0.85rem;padding:0.7rem 2rem;" onclick="openModal('signup')">Start Trading</button>
+    <button class="btn btn-primary" style="font-size:0.85rem;padding:0.7rem 2rem;" onclick="openModal('signupModal')">Start Trading</button>
     <button class="btn btn-outline" style="font-size:0.85rem;padding:0.7rem 2rem;">Explore Markets</button>
   </div>
 </div>
@@ -861,7 +747,7 @@
 
 <!-- TICKER -->
 <div class="ticker-wrap">
-  <div class="ticker" id="ticker">
+  <div class="ticker">
     <span class="ticker-item">🇺🇸 US Election 2026 → <span class="up">68%</span></span>
     <span class="ticker-item">₿ BTC > $100k by Dec → <span class="up">54%</span></span>
     <span class="ticker-item">🤖 GPT-5 launch Q3 → <span class="down">31%</span></span>
@@ -909,193 +795,171 @@
       <div class="trending-item"><span class="trend-rank">04</span><div class="trend-info"><div class="trend-name">Apple AR glasses ship in 2025?</div><div class="trend-vol">$3.9M vol</div></div><span class="trend-pct up">77%</span></div>
       <div class="trending-item"><span class="trend-rank">05</span><div class="trend-info"><div class="trend-name">ETH flips BTC this year?</div><div class="trend-vol">$2.8M vol</div></div><span class="trend-pct down">12%</span></div>
     </div>
-
     <div class="sidebar-card">
       <div class="sidebar-title">⚡ Live Activity</div>
       <div id="activityFeed"></div>
     </div>
-
-    <div class="sidebar-card" style="background: linear-gradient(135deg, rgba(0,229,160,0.06), var(--surface));">
-      <div class="sidebar-title">Your Portfolio</div>
-      <div style="text-align:center;padding:1rem 0;">
-        <div style="font-size:2rem;margin-bottom:0.5rem;">📊</div>
-        <div style="font-size:0.8rem;color:var(--muted);margin-bottom:1.2rem;">Sign in to track your positions and P&L</div>
-        <button class="btn btn-primary" style="width:100%;font-size:0.8rem;" onclick="openModal('login')">Sign in</button>
-      </div>
-    </div>
+    <div class="sidebar-card" style="background: linear-gradient(135deg, rgba(0,229,160,0.06), var(--surface));" id="portfolioCard"></div>
   </aside>
 </div>
 
 <script>
-// ─── MODAL SYSTEM ───────────────────────────────────────────
-let currentUser = null;
+const USERS_KEY = 'votegage_users';
+const SESSION_KEY = 'votegage_session';
 
-function openModal(type) {
-  const overlay = document.getElementById(type + 'Overlay');
-  overlay.classList.add('active');
+function getUsers() { try { return JSON.parse(localStorage.getItem(USERS_KEY)) || {}; } catch { return {}; } }
+function saveUsers(u) { localStorage.setItem(USERS_KEY, JSON.stringify(u)); }
+function getSession() { try { return JSON.parse(localStorage.getItem(SESSION_KEY)); } catch { return null; } }
+function saveSession(u) { localStorage.setItem(SESSION_KEY, JSON.stringify(u)); }
+function clearSession() { localStorage.removeItem(SESSION_KEY); }
+
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
   document.body.style.overflow = 'hidden';
-  // Reset form state
-  resetModal(type);
 }
-
-function closeModal(type) {
-  const overlay = document.getElementById(type + 'Overlay');
-  overlay.classList.remove('active');
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
   document.body.style.overflow = '';
+  document.querySelectorAll(`#${id} .form-error`).forEach(e => e.classList.remove('show'));
+  document.querySelectorAll(`#${id} .form-input`).forEach(e => e.classList.remove('error'));
+  document.querySelectorAll(`#${id} .alert-box`).forEach(e => { e.classList.remove('show'); e.textContent = ''; });
 }
+function switchModal(from, to) { closeModal(from); setTimeout(() => openModal(to), 200); }
 
-function handleOverlayClick(e, type) {
-  if (e.target === document.getElementById(type + 'Overlay')) {
-    closeModal(type);
-  }
-}
-
-function switchModal(from, to) {
-  closeModal(from);
-  setTimeout(() => openModal(to), 200);
-}
-
-function resetModal(type) {
-  const formContent = document.getElementById(type + 'FormContent');
-  const successContent = document.getElementById(type + 'Success');
-  formContent.classList.remove('hidden');
-  successContent.classList.remove('show');
-
-  // Clear errors
-  document.querySelectorAll('#' + type + 'Overlay .form-error').forEach(e => e.classList.remove('show'));
-  // Clear inputs
-  document.querySelectorAll('#' + type + 'Overlay .form-input').forEach(i => i.value = '');
-}
-
-// ─── VALIDATION ────────────────────────────────────────────
-function isValidEmail(email) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
-
-function showErr(id, show) {
-  const el = document.getElementById(id);
-  if (el) el.classList.toggle('show', show);
-}
-
-// ─── LOGIN ──────────────────────────────────────────────────
-function handleLogin() {
-  const email = document.getElementById('loginEmail').value.trim();
-  const pass = document.getElementById('loginPassword').value;
-
-  let valid = true;
-
-  if (!isValidEmail(email)) { showErr('loginEmailErr', true); valid = false; }
-  else showErr('loginEmailErr', false);
-
-  if (pass.length < 6) { showErr('loginPassErr', true); valid = false; }
-  else showErr('loginPassErr', false);
-
-  if (!valid) return;
-
-  // Simulate login success (static — works on GitHub Pages)
-  const username = email.split('@')[0];
-  loginSuccess(username);
-}
-
-function loginSuccess(username) {
-  document.getElementById('loginFormContent').classList.add('hidden');
-  document.getElementById('loginSuccess').classList.add('show');
-
-  currentUser = username;
-
-  setTimeout(() => {
-    closeModal('login');
-    updateNavLoggedIn(username);
-    showToast('✅ Logged in as ' + username, '#00e5a0');
-  }, 1800);
-}
-
-// ─── SIGNUP ─────────────────────────────────────────────────
-function handleSignup() {
-  const username = document.getElementById('signupUsername').value.trim();
-  const email = document.getElementById('signupEmail').value.trim();
-  const pass = document.getElementById('signupPassword').value;
-
-  let valid = true;
-
-  if (username.length < 3) { showErr('signupUsernameErr', true); valid = false; }
-  else showErr('signupUsernameErr', false);
-
-  if (!isValidEmail(email)) { showErr('signupEmailErr', true); valid = false; }
-  else showErr('signupEmailErr', false);
-
-  if (pass.length < 6) { showErr('signupPassErr', true); valid = false; }
-  else showErr('signupPassErr', false);
-
-  if (!valid) return;
-
-  // Simulate signup success
-  signupSuccess(username);
-}
-
-function signupSuccess(username) {
-  document.getElementById('signupFormContent').classList.add('hidden');
-  document.getElementById('signupSuccess').classList.add('show');
-
-  currentUser = username;
-
-  setTimeout(() => {
-    closeModal('signup');
-    updateNavLoggedIn(username);
-    showToast('🚀 Welcome to PredictX, ' + username + '!', '#00e5a0');
-  }, 1800);
-}
-
-// ─── SOCIAL LOGIN (demo) ─────────────────────────────────────
-function socialLogin(provider) {
-  showToast('🔗 ' + provider + ' OAuth requires a backend — demo mode only.', '#6c63ff');
-}
-
-// ─── NAV UPDATE ─────────────────────────────────────────────
-function updateNavLoggedIn(username) {
-  const navRight = document.getElementById('navRight');
-  const initials = username.slice(0, 2).toUpperCase();
-  navRight.innerHTML = `
-    <div class="user-pill">
-      <div class="user-avatar">${initials}</div>
-      ${username}
-    </div>
-    <button class="logout-btn" onclick="handleLogout()">Log out</button>
-  `;
-}
-
-function handleLogout() {
-  currentUser = null;
-  const navRight = document.getElementById('navRight');
-  navRight.innerHTML = `
-    <button class="btn btn-outline" onclick="openModal('login')">Log in</button>
-    <button class="btn btn-primary" onclick="openModal('signup')">Sign up</button>
-  `;
-  showToast('👋 Logged out successfully', '#5a617a');
-}
-
-// ─── KEYBOARD ESC ───────────────────────────────────────────
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') {
-    closeModal('login');
-    closeModal('signup');
-  }
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(overlay.id); });
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.open').forEach(m => closeModal(m.id));
 });
 
-// ─── MARKETS ────────────────────────────────────────────────
+function doSignup() {
+  const username = document.getElementById('signupUsername').value.trim();
+  const email    = document.getElementById('signupEmail').value.trim();
+  const password = document.getElementById('signupPassword').value;
+
+  ['signupUserErr','signupEmailErr','signupPassErr'].forEach(id => document.getElementById(id).classList.remove('show'));
+  ['signupUsername','signupEmail','signupPassword'].forEach(id => document.getElementById(id).classList.remove('error'));
+  document.getElementById('signupError').classList.remove('show');
+
+  let valid = true;
+  if (username.length < 3) { document.getElementById('signupUserErr').classList.add('show'); document.getElementById('signupUsername').classList.add('error'); valid = false; }
+  if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) { document.getElementById('signupEmailErr').classList.add('show'); document.getElementById('signupEmail').classList.add('error'); valid = false; }
+  if (password.length < 6) { document.getElementById('signupPassErr').classList.add('show'); document.getElementById('signupPassword').classList.add('error'); valid = false; }
+  if (!valid) return;
+
+  const users = getUsers();
+  if (users[email]) {
+    const err = document.getElementById('signupError');
+    err.textContent = '⚠ An account with this email already exists. Try logging in.';
+    err.classList.add('show');
+    return;
+  }
+
+  users[email] = { username, email, password, createdAt: Date.now() };
+  saveUsers(users);
+  saveSession({ username, email });
+  closeModal('signupModal');
+  renderNav();
+  renderPortfolio();
+  showToast(`🎉 Welcome to VoteGage, ${username}!`, '#00e5a0');
+}
+
+function doLogin() {
+  const email    = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+
+  ['loginEmailErr','loginPassErr'].forEach(id => document.getElementById(id).classList.remove('show'));
+  ['loginEmail','loginPassword'].forEach(id => document.getElementById(id).classList.remove('error'));
+  document.getElementById('loginError').classList.remove('show');
+
+  let valid = true;
+  if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) { document.getElementById('loginEmailErr').classList.add('show'); document.getElementById('loginEmail').classList.add('error'); valid = false; }
+  if (!password) { document.getElementById('loginPassErr').classList.add('show'); document.getElementById('loginPassword').classList.add('error'); valid = false; }
+  if (!valid) return;
+
+  const users = getUsers();
+  const user = users[email];
+  if (!user || user.password !== password) {
+    const err = document.getElementById('loginError');
+    err.textContent = '⚠ Invalid email or password. Please try again.';
+    err.classList.add('show');
+    return;
+  }
+
+  saveSession({ username: user.username, email: user.email });
+  closeModal('loginModal');
+  renderNav();
+  renderPortfolio();
+  showToast(`✓ Welcome back, ${user.username}!`, '#00e5a0');
+}
+
+function doLogout() {
+  clearSession();
+  renderNav();
+  renderPortfolio();
+  showToast('👋 Logged out successfully.', '#5a617a');
+}
+
+function renderNav() {
+  const session = getSession();
+  const navRight = document.getElementById('navRight');
+  if (session) {
+    const initials = session.username.slice(0,2).toUpperCase();
+    navRight.innerHTML = `
+      <div class="user-menu">
+        <div class="user-avatar">${initials}</div>
+        <span class="user-name">${session.username}</span>
+        <button class="btn-logout" onclick="doLogout()">Log out</button>
+      </div>`;
+  } else {
+    navRight.innerHTML = `
+      <button class="btn btn-outline" onclick="openModal('loginModal')">Log in</button>
+      <button class="btn btn-primary" onclick="openModal('signupModal')">Sign up</button>`;
+  }
+}
+
+function renderPortfolio() {
+  const session = getSession();
+  const card = document.getElementById('portfolioCard');
+  if (session) {
+    card.innerHTML = `
+      <div class="sidebar-title">Your Portfolio</div>
+      <div style="margin-bottom:0.8rem;">
+        <div style="font-size:0.68rem;color:var(--muted);margin-bottom:0.2rem;text-transform:uppercase;letter-spacing:0.08em;">Balance</div>
+        <div style="font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:700;color:var(--accent);">$1,000.00</div>
+        <div style="font-size:0.68rem;color:var(--muted);margin-top:0.2rem;">Demo balance • Not real money</div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:0.72rem;color:var(--muted);padding:0.6rem 0;border-top:1px solid var(--border);">
+        <span>Open positions</span><strong style="color:var(--text)">0</strong>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:0.72rem;color:var(--muted);padding:0.6rem 0;border-top:1px solid var(--border);">
+        <span>P&L today</span><strong style="color:var(--yes)">+$0.00</strong>
+      </div>`;
+  } else {
+    card.innerHTML = `
+      <div class="sidebar-title">Your Portfolio</div>
+      <div style="text-align:center;padding:1rem 0;">
+        <div style="font-size:2rem;margin-bottom:0.5rem;">📊</div>
+        <div style="font-size:0.8rem;color:var(--muted);margin-bottom:1.2rem;">Sign in to track your positions and P&L</div>
+        <button class="btn btn-primary" style="width:100%;font-size:0.8rem;" onclick="openModal('loginModal')">Log in</button>
+      </div>`;
+  }
+}
+
 const markets = [
-  { id: 1, category: 'politics', icon: '🇺🇸', title: 'Will Democrats win the 2026 House majority?', prob: 68, volume: '$4.2M', trending: true },
-  { id: 2, category: 'crypto', icon: '₿', title: 'Bitcoin above $100,000 by December 2025?', prob: 54, volume: '$12.4M', trending: true },
-  { id: 3, category: 'tech', icon: '🤖', title: 'Will OpenAI release GPT-5 before Q4 2025?', prob: 31, volume: '$5.6M', trending: false },
-  { id: 4, category: 'sports', icon: '⚽', title: 'Will Man City win the 2024-25 Champions League?', prob: 42, volume: '$2.1M', trending: false },
-  { id: 5, category: 'finance', icon: '📈', title: 'S&P 500 closes above 6500 in 2025?', prob: 61, volume: '$3.3M', trending: false },
-  { id: 6, category: 'tech', icon: '🍎', title: 'Apple AR headset ships to consumers in 2025?', prob: 77, volume: '$3.9M', trending: true },
-  { id: 7, category: 'crypto', icon: '🔷', title: 'Ethereum price above $5,000 by end of year?', prob: 38, volume: '$7.1M', trending: false },
-  { id: 8, category: 'politics', icon: '🇪🇺', title: 'Will EU impose new AI regulations by mid-2025?', prob: 82, volume: '$1.4M', trending: false },
-  { id: 9, category: 'sports', icon: '🏀', title: 'Will LeBron James retire after 2024-25 season?', prob: 23, volume: '$890K', trending: false },
-  { id: 10, category: 'finance', icon: '💵', title: 'Fed cuts rates 3+ times in 2025?', prob: 45, volume: '$2.7M', trending: false },
-  { id: 11, category: 'tech', icon: '🚀', title: 'SpaceX Starship reaches orbit in 2025?', prob: 88, volume: '$1.8M', trending: false },
-  { id: 12, category: 'politics', icon: '🇺🇦', title: 'Ukraine-Russia ceasefire agreement in 2025?', prob: 34, volume: '$6.2M', trending: true },
+  { id:1, category:'politics', icon:'🇺🇸', title:'Will Democrats win the 2026 House majority?', prob:68, volume:'$4.2M', trending:true },
+  { id:2, category:'crypto', icon:'₿', title:'Bitcoin above $100,000 by December 2025?', prob:54, volume:'$12.4M', trending:true },
+  { id:3, category:'tech', icon:'🤖', title:'Will OpenAI release GPT-5 before Q4 2025?', prob:31, volume:'$5.6M', trending:false },
+  { id:4, category:'sports', icon:'⚽', title:'Will Man City win the 2024-25 Champions League?', prob:42, volume:'$2.1M', trending:false },
+  { id:5, category:'finance', icon:'📈', title:'S&P 500 closes above 6500 in 2025?', prob:61, volume:'$3.3M', trending:false },
+  { id:6, category:'tech', icon:'🍎', title:'Apple AR headset ships to consumers in 2025?', prob:77, volume:'$3.9M', trending:true },
+  { id:7, category:'crypto', icon:'🔷', title:'Ethereum price above $5,000 by end of year?', prob:38, volume:'$7.1M', trending:false },
+  { id:8, category:'politics', icon:'🇪🇺', title:'Will EU impose new AI regulations by mid-2025?', prob:82, volume:'$1.4M', trending:false },
+  { id:9, category:'sports', icon:'🏀', title:'Will LeBron James retire after 2024-25 season?', prob:23, volume:'$890K', trending:false },
+  { id:10, category:'finance', icon:'💵', title:'Fed cuts rates 3+ times in 2025?', prob:45, volume:'$2.7M', trending:false },
+  { id:11, category:'tech', icon:'🚀', title:'SpaceX Starship reaches orbit in 2025?', prob:88, volume:'$1.8M', trending:false },
+  { id:12, category:'politics', icon:'🇺🇦', title:'Ukraine-Russia ceasefire agreement in 2025?', prob:34, volume:'$6.2M', trending:true },
 ];
 
 let activeFilter = 'all';
@@ -1118,13 +982,8 @@ function renderCards(list) {
         </div>
       </div>
       <div class="prob-section">
-        <div class="prob-label">
-          <span class="prob-val">${m.prob}%</span>
-          <span>YES</span>
-        </div>
-        <div class="prob-track">
-          <div class="prob-fill ${probColor}" style="width:${m.prob}%"></div>
-        </div>
+        <div class="prob-label"><span class="prob-val">${m.prob}%</span><span>YES</span></div>
+        <div class="prob-track"><div class="prob-fill ${probColor}" style="width:${m.prob}%"></div></div>
       </div>
       <div class="card-footer">
         <div class="volume">Vol <strong>${m.volume}</strong></div>
@@ -1132,8 +991,7 @@ function renderCards(list) {
           <button class="trade-btn yes" onclick="event.stopPropagation();trade(${m.id},'YES',${m.prob})">YES ${m.prob}¢</button>
           <button class="trade-btn no" onclick="event.stopPropagation();trade(${m.id},'NO',${100-m.prob})">NO ${100-m.prob}¢</button>
         </div>
-      </div>
-    `;
+      </div>`;
     grid.appendChild(card);
   });
 }
@@ -1142,21 +1000,19 @@ function filterMarkets(cat, btn) {
   activeFilter = cat;
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  const filtered = cat === 'all' ? markets : markets.filter(m => m.category === cat);
-  renderCards(filtered);
+  renderCards(cat === 'all' ? markets : markets.filter(m => m.category === cat));
 }
 
 function searchMarkets(val) {
   const q = val.toLowerCase();
   const base = activeFilter === 'all' ? markets : markets.filter(m => m.category === activeFilter);
-  const results = base.filter(m => m.title.toLowerCase().includes(q) || m.category.includes(q));
-  renderCards(results);
+  renderCards(base.filter(m => m.title.toLowerCase().includes(q) || m.category.includes(q)));
 }
 
 function trade(id, side, price) {
-  if (!currentUser) {
-    showToast('🔒 Sign in to trade!', '#6c63ff');
-    setTimeout(() => openModal('login'), 800);
+  if (!getSession()) {
+    showToast('🔒 Please log in to trade.', '#ff4d6d');
+    setTimeout(() => openModal('loginModal'), 500);
     return;
   }
   const m = markets.find(x => x.id === id);
@@ -1165,55 +1021,43 @@ function trade(id, side, price) {
 
 function showToast(msg, color) {
   const toast = document.createElement('div');
-  toast.style.cssText = `
-    position:fixed;bottom:2rem;right:2rem;background:#111318;border:1px solid ${color};
-    color:${color};padding:0.8rem 1.4rem;border-radius:10px;font-size:0.78rem;
-    font-family:'DM Mono',monospace;z-index:9999;max-width:340px;line-height:1.4;
-    box-shadow:0 8px 32px rgba(0,0,0,0.5);
-    animation:slideIn 0.3s ease;
-  `;
+  toast.style.cssText = `position:fixed;bottom:2rem;right:2rem;background:#111318;border:1px solid ${color};color:${color};padding:0.8rem 1.4rem;border-radius:10px;font-size:0.78rem;font-family:'DM Mono',monospace;z-index:9999;max-width:340px;line-height:1.4;box-shadow:0 8px 32px rgba(0,0,0,0.5);animation:slideIn 0.3s ease;`;
   toast.textContent = msg;
-  const style = document.createElement('style');
-  style.textContent = `@keyframes slideIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}`;
-  document.head.appendChild(style);
+  const s = document.createElement('style');
+  s.textContent = `@keyframes slideIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}`;
+  document.head.appendChild(s);
   document.body.appendChild(toast);
   setTimeout(() => toast.remove(), 3000);
 }
 
-// Activity feed
 const actions = [
-  ['0xAf3..b2', 'YES', 'BTC $100K', '$2,400'],
-  ['whale.eth', 'NO', 'GPT-5 Q3', '$8,100'],
-  ['0x99c..44', 'YES', 'Apple AR', '$550'],
-  ['trader7', 'YES', 'US Election', '$1,200'],
-  ['0xBb2..91', 'NO', 'ETH flip', '$3,300'],
-  ['crypto_g', 'YES', 'S&P 6500', '$750'],
+  ['0xAf3..b2','YES','BTC $100K','$2,400'],
+  ['whale.eth','NO','GPT-5 Q3','$8,100'],
+  ['0x99c..44','YES','Apple AR','$550'],
+  ['trader7','YES','US Election','$1,200'],
+  ['0xBb2..91','NO','ETH flip','$3,300'],
+  ['crypto_g','YES','S&P 6500','$750'],
 ];
 
 function renderActivity() {
-  const feed = document.getElementById('activityFeed');
-  feed.innerHTML = actions.map(([user, side, market, amt]) => `
+  document.getElementById('activityFeed').innerHTML = actions.map(([user,side,market,amt]) => `
     <div class="activity-item">
       <div class="activity-dot ${side.toLowerCase()}"></div>
-      <div class="activity-text">
-        <strong>${user}</strong> bought <strong>${side}</strong> on ${market}
-        <span class="amt">${amt}</span>
-        <br/><span style="font-size:0.65rem">${Math.floor(Math.random()*59)+1}s ago</span>
-      </div>
-    </div>
-  `).join('');
+      <div class="activity-text"><strong>${user}</strong> bought <strong>${side}</strong> on ${market} <span class="amt">${amt}</span><br/><span style="font-size:0.65rem">${Math.floor(Math.random()*59)+1}s ago</span></div>
+    </div>`).join('');
 }
 
 function animateProbs() {
   document.querySelectorAll('.prob-fill').forEach(el => {
-    const w = el.style.width;
-    el.style.width = '0';
+    const w = el.style.width; el.style.width = '0';
     setTimeout(() => el.style.width = w, 200);
   });
 }
 
+renderNav();
 renderCards(markets);
 renderActivity();
+renderPortfolio();
 setTimeout(animateProbs, 100);
 setInterval(() => { actions.unshift(actions.pop()); renderActivity(); }, 3000);
 </script>
